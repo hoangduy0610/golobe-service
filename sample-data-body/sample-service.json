@@ -1,0 +1,33 @@
+{
+  "name": "Khách sạn số 1",
+  "images": [
+    "https://motogo.vn/wp-content/uploads/2020/02/khach-san-o-da-lat-48.jpg",
+    "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/16/06/fa/66/swiss-belresort-tuyen.jpg?w=1200&h=-1&s=1",
+    "https://merperledalat.vn/wp-content/uploads/2024/05/Khach-san-5-sao-Da-Lat-nao-dep-nhat-nam-2024.png",
+    "https://motogo.vn/wp-content/uploads/2020/02/khach-san-o-da-lat-48.jpg",
+    "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/16/06/fa/66/swiss-belresort-tuyen.jpg?w=1200&h=-1&s=1",
+    "https://merperledalat.vn/wp-content/uploads/2024/05/Khach-san-5-sao-Da-Lat-nao-dep-nhat-nam-2024.png"
+  ],
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sem orci, luctus eu elementum nec, malesuada id elit. Donec rhoncus sit amet libero sed molestie. Sed sed vehicula erat. Donec in malesuada libero. Duis in rhoncus est. Curabitur malesuada massa ac sagittis rhoncus. Sed dolor nunc, venenatis non porttitor ut, vestibulum vitae arcu. Ut gravida nisl sit amet accumsan mollis. Donec at semper urna. Proin laoreet magna mauris, in aliquet arcu fermentum sit amet. Nullam pellentesque libero egestas leo blandit commodo. Quisque quis libero luctus, venenatis turpis sed, dapibus lacus. Maecenas tellus eros, tincidunt nec nisi ut, tristique vehicula ipsum. Ut pharetra vehicula nibh, sed sollicitudin nunc eleifend nec.",
+  "address": "Đà Lạt, Lâm Đồng, Việt Nam",
+  "phone": "0949689876",
+  "email": "hoangduy@uit.edu.vn",
+  "website": "https://dalat.trip.com",
+  "features": [
+    "shower",
+    "kingbed",
+    "tv"
+  ],
+  "priceRange": "cheap",
+  "serviceTypeId": 1,
+  "openingHours": [
+    {
+      "day": "Monday",
+      "hours": "Custom",
+      "customHours": {
+        "open": "08:00",
+        "close": "22:00"
+      }
+    }
+  ]
+}

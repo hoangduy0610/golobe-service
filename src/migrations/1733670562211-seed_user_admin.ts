@@ -2,8 +2,8 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { EnumRoles } from "@/enums/EnumRoles";
 
-export class SeedUserAdmin1732670562211 implements MigrationInterface {
-    name = 'SeedUserAdmin1732670562211'
+export class SeedUserAdmin1733670562211 implements MigrationInterface {
+    name = 'SeedUserAdmin1733670562211'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const password = await bcrypt.hash('root', 12);
@@ -11,7 +11,7 @@ export class SeedUserAdmin1732670562211 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DELETE FROM "user" WHERE "username" = 'root@localhost.io'`);
+        await queryRunner.query(`DELETE FROM "user" WHERE "email" = 'root@localhost.io'`);
     }
 
 }

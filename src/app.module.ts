@@ -4,6 +4,9 @@ import { AuthModule } from './modules/AuthModule';
 import typeorm from './commons/TypeORMConfig';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { envFiles } from './commons/Constant';
+import { LocationModule } from './modules/LocationModule';
+import { ServiceTypeModule } from './modules/ServiceTypeModule';
+import { ServiceModule } from './modules/ServiceModule';
 
 @Module({
   imports: [
@@ -17,6 +20,9 @@ import { envFiles } from './commons/Constant';
       useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
     }),
     AuthModule,
+    LocationModule,
+    ServiceTypeModule,
+    ServiceModule,
   ]
 })
 export class AppModule { }

@@ -11,8 +11,8 @@ export class User {
     @Column()
     password: string;
 
-    @Column({ enum: Object.keys(EnumRoles) })
-    role: string;
+    @Column({ type: "enum", enum: Object.values(EnumRoles), default: EnumRoles.ROLE_USER })
+    role: EnumRoles;
 
     @Column()
     name: string;
@@ -20,10 +20,10 @@ export class User {
     @Column({ unique: true })
     email: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 
     @DeleteDateColumn({ nullable: true })
