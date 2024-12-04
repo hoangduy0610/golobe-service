@@ -2,8 +2,8 @@ import { MigrationInterface, QueryRunner } from "typeorm";
 import * as bcrypt from 'bcrypt';
 import { EnumRoles } from "@/enums/EnumRoles";
 
-export class SeedUserAdmin1733670562211 implements MigrationInterface {
-    name = 'SeedUserAdmin1733670562211'
+export class SeedUserAdmin1733274163696 implements MigrationInterface {
+    name = 'SeedUserAdmin1733274163696'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         const password = await bcrypt.hash('root', 12);
