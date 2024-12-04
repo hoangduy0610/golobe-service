@@ -15,4 +15,9 @@ export enum MessageCode {
 	OPENING_HOURS_REQUIRED = "Thời gian mở cửa không được để trống",
 	OPENING_HOURS_WRONG_FORMAT = "Thời gian mở cửa không đúng định dạng",
 	SERVICE_CREATE_FAILED = "Không thể tạo dịch vụ",
+	PLAN_NOT_FOUND = "Không tìm thấy thông tin kế hoạch",
+	START_DATE_END_DATE_REQUIRED = "Ngày bắt đầu và ngày kết thúc không được để trống",
+	START_DATE_END_DATE_WRONG = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc",
+	PLAN_SCHEDULE_CREATE_FAILED = "Không thể tạo lịch kế hoạch",
+    PLAN_SCHEDULE_NOT_FOUND = "Không tìm thấy lịch kế hoạch",
 }

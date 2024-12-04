@@ -3,10 +3,10 @@ import { ApplicationException } from '@/controllers/ExceptionController';
 import { Service_CreateDto, Service_UpdateDto } from '@/dtos/Service_Dtos';
 import { Service } from '@/entities/Service.entity';
 import { ServiceType } from '@/entities/ServiceType.entity';
-import { EnumOpeningDay, EnumOpeningHours } from '@/enums/EnumOpening';
+import { EnumOpeningHours } from '@/enums/EnumOpening';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ServiceService {
@@ -72,6 +72,37 @@ export class ServiceService {
 
         if (!service) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.SERVICE_NOT_FOUND);
+        }
+
+        if (dto.serviceTypeId) {
+            const serviceType = await this.serviceTypeRepository.findOne({
+                where: { id: dto.serviceTypeId },
+                withDeleted: false,
+            });
+
+            if (!serviceType) {
+                throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.SERVICE_TYPE_NOT_FOUND);
+            }
+        }
+
+        if (dto.openingHours) {
+            // Check Opening Hours
+            if (dto.openingHours.length === 0) {
+                throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.OPENING_HOURS_REQUIRED);
+            }
+
+            // Remove duplicates
+            for (const openingHour of dto.openingHours) {
+                if (!openingHour.day || !openingHour.hours) {
+                    throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.OPENING_HOURS_WRONG_FORMAT);
+                }
+
+                if (openingHour.hours == EnumOpeningHours.CUSTOM) {
+                    if (!openingHour?.customHours?.open || !openingHour?.customHours?.close) {
+                        throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.OPENING_HOURS_WRONG_FORMAT);
+                    }
+                }
+            }
         }
 
         return await this.serviceRepository.save({

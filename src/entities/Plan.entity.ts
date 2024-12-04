@@ -1,6 +1,6 @@
 
 import { EnumVisibility } from '@/enums/EnumVisibility';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from './User.entity';
 import { Service } from './Service.entity';
 import { Location } from './Location.entity';
@@ -29,7 +29,8 @@ export class Plan {
     @OneToMany(() => PlanSchedule, schedule => schedule.plan)
     schedule: PlanSchedule[];
 
-    @ManyToMany(() => Service)
+    @ManyToMany(() => Service, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    @JoinTable()
     savedServices: Service[];
 
     @ManyToOne(() => User)

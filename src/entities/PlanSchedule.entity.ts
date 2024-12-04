@@ -10,15 +10,15 @@ export class PlanSchedule {
     id: number;
 
     @Column()
-    day: Date;
+    day: number;
 
     @ManyToOne(() => Location)
     location: Location;
 
-    @ManyToOne(() => Plan)
+    @ManyToOne(() => Plan, plan => plan.schedule, { cascade:true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     plan: Plan;
 
-    @OneToMany(() => PlanScheduleItem, item => item.schedule)
+    @OneToMany(() => PlanScheduleItem, item => item.schedule, { cascade: true, onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     items: PlanScheduleItem[];
 
     @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })

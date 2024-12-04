@@ -8,17 +8,17 @@ export class PlanScheduleItem {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => PlanSchedule)
+    @ManyToOne(() => PlanSchedule, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
     schedule: PlanSchedule;
 
     @ManyToOne(() => Service)
     service: Service;
 
     @Column({ nullable: true })
-    startTime?: Date;
+    startTime?: string;
 
     @Column({ nullable: true })
-    endTime?: Date;
+    endTime?: string;
 
     @Column({ nullable: true })
     reservationCode?: string;

@@ -16,7 +16,9 @@ async function bootstrap() {
     challenge: true,
     users: { admin: 'admin' },
   }));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+  }));
   app.enableCors({});
 
   const options = new DocumentBuilder()

@@ -7,6 +7,7 @@ import { envFiles } from './commons/Constant';
 import { LocationModule } from './modules/LocationModule';
 import { ServiceTypeModule } from './modules/ServiceTypeModule';
 import { ServiceModule } from './modules/ServiceModule';
+import { PlanModule } from './modules/PlanModule';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ServiceModule } from './modules/ServiceModule';
     LocationModule,
     ServiceTypeModule,
     ServiceModule,
+    PlanModule,
   ]
 })
 export class AppModule { }
