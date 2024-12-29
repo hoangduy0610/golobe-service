@@ -39,7 +39,7 @@ export class PlanService {
     async findById(id: number): Promise<Plan> {
         return this.planRepository.findOne({
             where: { id },
-            relations: ['savedServices', 'schedule'],
+            relations: ['location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
             withDeleted: false,
         });
     }
