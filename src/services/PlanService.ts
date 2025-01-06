@@ -1,3 +1,4 @@
+import { Constant } from '@/commons/Constant';
 import { MessageCode } from '@/commons/MessageCode';
 import { ApplicationException } from '@/controllers/ExceptionController';
 import { PlanSchedule_AddItemDto, PlanSchedule_RemoveItemDto, PlanSchedule_SetLocationDto } from '@/dtos/PlanSchedule_Dtos';
@@ -12,6 +13,7 @@ import { EnumVisibility } from '@/enums/EnumVisibility';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, In } from 'typeorm';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class PlanService {
@@ -37,7 +39,7 @@ export class PlanService {
         });
     }
 
-    async findById(userId: number, id: number): Promise<Plan> {
+    async findById(id: number, authorization?: string): Promise<Plan> {
         const plan = await this.planRepository.findOne({
             where: { id },
             relations: ['owner', 'location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
@@ -49,7 +51,22 @@ export class PlanService {
         }
 
         if (plan.visibility === EnumVisibility.PRIVATE) {
-            if (plan.owner.id !== userId) {
+            if (!authorization) {
+                throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
+            }
+            
+            try {
+                const jwtRaw = authorization.split(' ')[1];
+                const decoded = jwt.verify(jwtRaw, Constant.JWT_SECRET);
+                const userId = decoded['id'];
+
+                if (plan.owner.id !== userId) {
+                    throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
+                }
+            } catch (error) {
+                if (error instanceof ApplicationException) {
+                    throw error;
+                }
                 throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
             }
         }
