@@ -32,14 +32,14 @@ export class PlanService {
     async findAll(): Promise<Plan[]> {
         return this.planRepository.find({
             withDeleted: false,
-            relations: ['savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
+            relations: ['location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
         });
     }
 
     async findById(id: number): Promise<Plan> {
         return this.planRepository.findOne({
             where: { id },
-            relations: ['savedServices', 'schedule'],
+            relations: ['location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
             withDeleted: false,
         });
     }
@@ -65,6 +65,7 @@ export class PlanService {
         const res = await this.planRepository.save({
             ...dto,
             owner: await this.userRepository.findOne({ where: {} }),
+            location: location,
         });
 
         // Create Plan Schedule for each day from start date to end date
@@ -106,6 +107,8 @@ export class PlanService {
             if (!location) {
                 throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.LOCATION_NOT_FOUND);
             }
+
+            plan.location = location;
         }
 
         if (dto.startDate && dto.endDate) {
