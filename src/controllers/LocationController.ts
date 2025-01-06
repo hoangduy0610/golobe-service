@@ -1,10 +1,17 @@
 import { Location_CreateDto, Location_UpdateDto } from '@/dtos/Location_Dtos';
+import { EnumRoles } from '@/enums/EnumRoles';
+import { Role } from '@/guards/RoleDecorator';
+import { RoleGuard } from '@/guards/RoleGuard';
 import { LocationService } from '@/services/LocationService';
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('location')
 @Controller('location')
+@UseGuards(AuthGuard('jwt'), RoleGuard)
+@ApiBearerAuth()
+@Role(EnumRoles.ROLE_ADMIN)
 export class LocationController {
     constructor(private readonly locationService: LocationService) { }
 

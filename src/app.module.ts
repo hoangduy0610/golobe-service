@@ -8,6 +8,9 @@ import { LocationModule } from './modules/LocationModule';
 import { ServiceTypeModule } from './modules/ServiceTypeModule';
 import { ServiceModule } from './modules/ServiceModule';
 import { PlanModule } from './modules/PlanModule';
+import { ReviewModule } from './modules/ReviewModule';
+import { ForumModule } from './modules/ForumModule';
+import { BlogModule } from './modules/BlogModule';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { PlanModule } from './modules/PlanModule';
     ServiceTypeModule,
     ServiceModule,
     PlanModule,
+    ReviewModule,
+    ForumModule,
+    BlogModule,
   ]
 })
 export class AppModule { }

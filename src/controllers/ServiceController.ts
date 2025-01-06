@@ -1,10 +1,17 @@
 import { Service_CreateDto, Service_UpdateDto } from '@/dtos/Service_Dtos';
+import { EnumRoles } from '@/enums/EnumRoles';
+import { Role } from '@/guards/RoleDecorator';
+import { RoleGuard } from '@/guards/RoleGuard';
 import { ServiceService } from '@/services/ServiceService';
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('service')
 @Controller('service')
+@UseGuards(AuthGuard('jwt'), RoleGuard)
+@ApiBearerAuth()
+@Role(EnumRoles.ROLE_ADMIN)
 export class ServiceController {
     constructor(private readonly serviceService: ServiceService) { }
 

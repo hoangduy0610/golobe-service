@@ -1,11 +1,18 @@
 import { ServiceType_CreateDto } from '@/dtos/ServiceType_CreateDto';
 import { ServiceType_UpdateDto } from '@/dtos/ServiceType_UpdateDto';
+import { EnumRoles } from '@/enums/EnumRoles';
+import { Role } from '@/guards/RoleDecorator';
+import { RoleGuard } from '@/guards/RoleGuard';
 import { ServiceTypeService } from '@/services/ServiceTypeService';
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('service-type')
 @Controller('service-type')
+@UseGuards(AuthGuard('jwt'), RoleGuard)
+@ApiBearerAuth()
+@Role(EnumRoles.ROLE_ADMIN)
 export class ServiceTypeController {
     constructor(private readonly serviceTypeService: ServiceTypeService) { }
 

@@ -8,6 +8,7 @@ import { PlanSchedule } from '@/entities/PlanSchedule.entity';
 import { PlanScheduleItem } from '@/entities/PlanScheduleItem.entity';
 import { Service } from '@/entities/Service.entity';
 import { User } from '@/entities/User.entity';
+import { EnumVisibility } from '@/enums/EnumVisibility';
 import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, In } from 'typeorm';
@@ -36,15 +37,27 @@ export class PlanService {
         });
     }
 
-    async findById(id: number): Promise<Plan> {
-        return this.planRepository.findOne({
+    async findById(userId: number, id: number): Promise<Plan> {
+        const plan = await this.planRepository.findOne({
             where: { id },
-            relations: ['location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
+            relations: ['owner', 'location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
             withDeleted: false,
         });
+
+        if (!plan) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.PLAN_NOT_FOUND);
+        }
+
+        if (plan.visibility === EnumVisibility.PRIVATE) {
+            if (plan.owner.id !== userId) {
+                throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
+            }
+        }
+
+        return plan;
     }
 
-    async create(dto: Plan_CreateDto): Promise<Plan> {
+    async create(userId: number, dto: Plan_CreateDto): Promise<Plan> {
         const location = await this.locationRepository.findOne({
             where: { id: dto.locationId },
             withDeleted: false,
@@ -52,6 +65,15 @@ export class PlanService {
 
         if (!location) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.LOCATION_NOT_FOUND);
+        }
+
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            withDeleted: false,
+        });
+
+        if (!user) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_NOT_FOUND);
         }
 
         if (!dto.startDate || !dto.endDate) {
@@ -64,7 +86,7 @@ export class PlanService {
 
         const res = await this.planRepository.save({
             ...dto,
-            owner: await this.userRepository.findOne({ where: {} }),
+            owner: user,
             location: location,
         });
 
