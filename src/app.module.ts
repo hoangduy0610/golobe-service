@@ -12,6 +12,7 @@ import { ReviewModule } from './modules/ReviewModule';
 import { ForumModule } from './modules/ForumModule';
 import { BlogModule } from './modules/BlogModule';
 import { FileModule } from './modules/FileModule';
+import { UserModule } from './modules/UserModule';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { FileModule } from './modules/FileModule';
     ReviewModule,
     ForumModule,
     BlogModule,
+    UserModule,
   ]
 })
 export class AppModule { }

@@ -20,7 +20,8 @@ export enum MessageCode {
 	START_DATE_END_DATE_WRONG = "Ngày bắt đầu phải nhỏ hơn ngày kết thúc",
 	PLAN_SCHEDULE_CREATE_FAILED = "Không thể tạo lịch kế hoạch",
     PLAN_SCHEDULE_NOT_FOUND = "Không tìm thấy lịch kế hoạch",
-    REVIEW_NOT_FOUND = "REVIEW_NOT_FOUND",
-    BLOG_NOT_FOUND = "BLOG_NOT_FOUND",
-    FOLLOW_NOT_FOUND = "FOLLOW_NOT_FOUND",
+    REVIEW_NOT_FOUND = "Không tìm thấy đánh giá",
+    BLOG_NOT_FOUND = "Không tìm thấy bài viết",
+    FOLLOW_NOT_FOUND = "Không tìm thấy thông tin theo dõi",
+    USER_UPDATE_ERROR = "Không thể cập nhật thông tin người dùng",
 }
