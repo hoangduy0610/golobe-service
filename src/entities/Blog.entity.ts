@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./User.entity";
 import { Service } from "./Service.entity";
 
@@ -20,6 +20,7 @@ export class Blog {
     user: User;
 
     @ManyToMany(() => Service, service => service.linkedBlogs)
+    @JoinTable()
     linkedServices: Service[];
     
     @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })

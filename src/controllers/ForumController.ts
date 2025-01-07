@@ -42,6 +42,11 @@ export class ForumController {
         return res.status(HttpStatus.OK).json(await this.forumService.findAll());
     }
 
+    @Get('/main')
+    async getMainTopic(@Req() req, @Res() res) {
+        return res.status(HttpStatus.OK).json(await this.forumService.findMainTopics());
+    }
+
     @Get('/list/following')
     async findFollowing(@Req() req, @Res() res) {
         return res.status(HttpStatus.OK).json(await this.forumService.getFollowing(req.user.id));

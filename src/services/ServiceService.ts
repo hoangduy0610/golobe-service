@@ -18,13 +18,17 @@ export class ServiceService {
     ) { }
 
     async findAll(): Promise<Service[]> {
-        return this.serviceRepository.find({ withDeleted: false });
+        return this.serviceRepository.find({
+            withDeleted: false,
+            relations: ['serviceType', 'reviews'],
+        });
     }
 
     async findById(id: number): Promise<Service> {
         return this.serviceRepository.findOne({
             where: { id },
             withDeleted: false,
+            relations: ['serviceType', 'reviews', 'reviews.user'],
         });
     }
 

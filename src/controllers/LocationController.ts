@@ -9,9 +9,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('location')
 @Controller('location')
-@UseGuards(AuthGuard('jwt'), RoleGuard)
-@ApiBearerAuth()
-@Role(EnumRoles.ROLE_ADMIN)
 export class LocationController {
     constructor(private readonly locationService: LocationService) { }
 
@@ -21,6 +18,9 @@ export class LocationController {
     }
     
     @Post('/')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async create(@Req() req, @Res() res, @Body() dto: Location_CreateDto) {
         return res.status(HttpStatus.OK).json(await this.locationService.create(dto));
     }
@@ -31,11 +31,17 @@ export class LocationController {
     }
 
     @Put('/:id')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async update(@Req() req, @Res() res, @Param('id') id: number, @Body() dto: Location_UpdateDto) {
         return res.status(HttpStatus.OK).json(await this.locationService.update(id, dto));
     }
 
     @Delete('/:id')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async delete(@Req() req, @Res() res, @Param('id') id: number) {
         return res.status(HttpStatus.OK).json(await this.locationService.delete(id));
     }
