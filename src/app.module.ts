@@ -11,6 +11,7 @@ import { PlanModule } from './modules/PlanModule';
 import { ReviewModule } from './modules/ReviewModule';
 import { ForumModule } from './modules/ForumModule';
 import { BlogModule } from './modules/BlogModule';
+import { FileModule } from './modules/FileModule';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { BlogModule } from './modules/BlogModule';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
     }),
+    FileModule,
     AuthModule,
     LocationModule,
     ServiceTypeModule,

@@ -4,6 +4,9 @@ import { AppModule } from './app.module';
 import * as basicAuth from 'express-basic-auth';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { envFiles } from './commons/Constant';
+import { join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import * as express from 'express';
 
 require('dotenv').config(envFiles);
 
@@ -11,6 +14,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['warn', 'error', 'debug', 'log', 'verbose'],
   });
+
+  const uploadDir = join(process.cwd(), 'uploads');
+  if (!existsSync(uploadDir)) {
+    mkdirSync(uploadDir);
+  }
+  app.use('/uploads', express.static(join(process.cwd(), 'uploads')));
 
   app.use('/swagger-ui.html', basicAuth({
     challenge: true,
