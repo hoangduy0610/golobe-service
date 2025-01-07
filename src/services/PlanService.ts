@@ -14,6 +14,7 @@ import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, In } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
+import { EnumRoles } from '@/enums/EnumRoles';
 
 @Injectable()
 export class PlanService {
@@ -35,7 +36,7 @@ export class PlanService {
     async findAll(): Promise<Plan[]> {
         return this.planRepository.find({
             withDeleted: false,
-            relations: ['location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
+            relations: ['owner', 'location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
         });
     }
 
@@ -54,13 +55,14 @@ export class PlanService {
             if (!authorization) {
                 throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
             }
-            
+
             try {
                 const jwtRaw = authorization.split(' ')[1];
                 const decoded = jwt.verify(jwtRaw, Constant.JWT_SECRET);
                 const userId = decoded['id'];
+                const role = decoded['role'];
 
-                if (plan.owner.id !== userId) {
+                if (plan.owner.id !== userId && role !== EnumRoles.ROLE_ADMIN) {
                     throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
                 }
             } catch (error) {
@@ -72,6 +74,27 @@ export class PlanService {
         }
 
         return plan;
+    }
+
+    async findByOwner(userId: number): Promise<Plan[]> {
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+            withDeleted: false,
+        });
+
+        if (!user) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_NOT_FOUND);
+        }
+
+        return this.planRepository.find({
+            where: {
+                owner: {
+                    id: userId
+                },
+            },
+            withDeleted: false,
+            relations: ['owner', 'location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
+        });
     }
 
     async create(userId: number, dto: Plan_CreateDto): Promise<Plan> {

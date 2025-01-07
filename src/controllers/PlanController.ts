@@ -18,6 +18,13 @@ export class PlanController {
         return res.status(HttpStatus.OK).json(await this.planService.findAll());
     }
 
+    @Get('/mine')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    async findAllMine(@Req() req, @Res() res) {
+        return res.status(HttpStatus.OK).json(await this.planService.findByOwner(req.user.id));
+    }
+
     @Post('/saves')
     @UseGuards(AuthGuard('jwt'), RoleGuard)
     @ApiBearerAuth()

@@ -9,9 +9,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('service')
 @Controller('service')
-@UseGuards(AuthGuard('jwt'), RoleGuard)
-@ApiBearerAuth()
-@Role(EnumRoles.ROLE_ADMIN)
 export class ServiceController {
     constructor(private readonly serviceService: ServiceService) { }
 
@@ -21,6 +18,9 @@ export class ServiceController {
     }
 
     @Post('/')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async create(@Req() req, @Res() res, @Body() dto: Service_CreateDto) {
         return res.status(HttpStatus.OK).json(await this.serviceService.create(dto));
     }
@@ -31,11 +31,17 @@ export class ServiceController {
     }
 
     @Put('/:id')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async update(@Req() req, @Res() res, @Param('id') id: number, @Body() dto: Service_UpdateDto) {
         return res.status(HttpStatus.OK).json(await this.serviceService.update(id, dto));
     }
 
     @Delete('/:id')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async delete(@Req() req, @Res() res, @Param('id') id: number) {
         return res.status(HttpStatus.OK).json(await this.serviceService.delete(id));
     }

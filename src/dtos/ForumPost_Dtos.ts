@@ -2,6 +2,11 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsNotEmpty, IsString, IsOptional } from "class-validator";
 
 export class ForumPost_CreateDto {
+    @ApiProperty({ required: false, type: String })
+    @IsString()
+    @IsOptional()
+    title?: string;
+
     @ApiProperty({ required: true, type: String })
     @IsString()
     @IsNotEmpty()

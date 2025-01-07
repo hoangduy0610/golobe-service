@@ -1,8 +1,9 @@
 import { ApplicationException } from "@/controllers/ExceptionController";
+import { EnumVisibility } from "@/enums/EnumVisibility";
 import { HttpStatus } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 import * as moment from 'moment';
 
 export class Plan_CreateDto {
@@ -20,6 +21,10 @@ export class Plan_CreateDto {
     @IsNumber()
     @IsNotEmpty()
     locationId: number;
+
+    @ApiProperty({ enum: EnumVisibility })
+    @IsEnum(EnumVisibility)
+    visibility: EnumVisibility;
 
     @ApiProperty({ required: true, type: Date })
     @IsNotEmpty()

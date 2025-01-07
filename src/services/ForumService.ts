@@ -7,7 +7,7 @@ import { ForumPost } from '@/entities/ForumPost.entity';
 import { User } from '@/entities/User.entity';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 
 @Injectable()
 export class ForumService {
@@ -19,13 +19,28 @@ export class ForumService {
     ) { }
 
     async findAll(): Promise<ForumPost[]> {
-        return this.forumPostRepository.find({ withDeleted: false });
+        return this.forumPostRepository.find({
+            withDeleted: false,
+            relations: ['user', 'replies', 'reacts', 'reacts.user', 'replies.user', 'replies.reacts', 'replies.reacts.user'],
+        });
+    }
+
+    async findMainTopics(): Promise<ForumPost[]> {
+        return this.forumPostRepository.find({
+            where: { 
+                replyTo: IsNull(), 
+                title: Not(IsNull()), 
+            },
+            withDeleted: false,
+            relations: ['user', 'replies', 'reacts', 'reacts.user', 'replies.user', 'replies.reacts', 'replies.reacts.user'],
+        });
     }
 
     async findById(id: number): Promise<ForumPost> {
         return this.forumPostRepository.findOne({
             where: { id },
             withDeleted: false,
+            relations: ['user', 'replies', 'reacts', 'reacts.user', 'replies.user', 'replies.reacts', 'replies.reacts.user'],
         });
     }
 
@@ -43,6 +58,10 @@ export class ForumService {
             content: dto.content,
             user,
         });
+
+        if (dto.title) {
+            entity.title = dto.title;
+        }
 
         if (dto.replyToId) {
             const replyTo = await this.forumPostRepository.findOne({

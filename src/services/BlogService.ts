@@ -18,13 +18,17 @@ export class BlogService {
     ) { }
 
     async findAll(): Promise<Blog[]> {
-        return this.blogRepository.find({ withDeleted: false });
+        return this.blogRepository.find({
+            withDeleted: false,
+            relations: ['linkedServices', 'user']
+        });
     }
 
     async findById(id: number): Promise<Blog> {
         return this.blogRepository.findOne({
             where: { id },
             withDeleted: false,
+            relations: ['linkedServices', 'user']
         });
     }
 
@@ -47,7 +51,7 @@ export class BlogService {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_NOT_FOUND);
         }
 
-        const entity = this.blogRepository.create({
+        const entity = await this.blogRepository.create({
             ...dto,
             linkedServices: services,
             user,

@@ -10,9 +10,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('service-type')
 @Controller('service-type')
-@UseGuards(AuthGuard('jwt'), RoleGuard)
-@ApiBearerAuth()
-@Role(EnumRoles.ROLE_ADMIN)
 export class ServiceTypeController {
     constructor(private readonly serviceTypeService: ServiceTypeService) { }
 
@@ -27,16 +24,25 @@ export class ServiceTypeController {
     }
 
     @Post('/')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async create(@Req() req, @Res() res, @Body() dto: ServiceType_CreateDto) {
         return res.status(HttpStatus.OK).json(await this.serviceTypeService.create(dto));
     }
 
     @Put('/:id')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async update(@Req() req, @Res() res, @Param('id') id: number, @Body() dto: ServiceType_UpdateDto) {
         return res.status(HttpStatus.OK).json(await this.serviceTypeService.update(id, dto));
     }
 
     @Delete('/:id')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    @Role(EnumRoles.ROLE_ADMIN)
     async delete(@Req() req, @Res() res, @Param('id') id: number) {
         return res.status(HttpStatus.OK).json(await this.serviceTypeService.delete(id));
     }
