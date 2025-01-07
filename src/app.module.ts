@@ -13,6 +13,7 @@ import { ForumModule } from './modules/ForumModule';
 import { BlogModule } from './modules/BlogModule';
 import { FileModule } from './modules/FileModule';
 import { UserModule } from './modules/UserModule';
+import { ChatModule } from './modules/ChatModule';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { UserModule } from './modules/UserModule';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
     }),
+    ChatModule,
     FileModule,
     AuthModule,
     LocationModule,
