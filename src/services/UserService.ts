@@ -61,10 +61,6 @@ export class UserService {
             throw new ApplicationException(HttpStatus.UNAUTHORIZED, MessageCode.USER_UPDATE_ERROR);
         }
 
-        if (reqUser.role === EnumRoles.ROLE_USER) {
-            dto.role = EnumRoles.ROLE_USER;
-        }
-
         const user = await this.userRepository.findOne({ where: { id: id }, withDeleted: false });
         if (!user) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.USER_NOT_FOUND);

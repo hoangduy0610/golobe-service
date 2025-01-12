@@ -23,4 +23,10 @@ export class ChatController {
     async create(@Req() req, @Res() res, @Body() dto: ChatDto) {
         return res.status(HttpStatus.OK).json(await this.chatService.processUserMessage(dto.message));
     }
+
+    @Post('/toggle')
+    async toggleBlock(@Req() req, @Res() res) {
+        this.chatService.storage.set('isBlock', this.chatService.storage.get('isBlock') === 'true' ? 'false' : 'true');
+        return res.status(HttpStatus.OK).json({ isBlock: this.chatService.storage.get('isBlock') });
+    }
 }

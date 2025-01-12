@@ -1,3 +1,4 @@
+import { TemporaryStorage } from '@/commons/TemporaryStorage';
 import { ApplicationException } from '@/controllers/ExceptionController';
 import { Location } from '@/entities/Location.entity';
 import { Service } from '@/entities/Service.entity';
@@ -13,14 +14,19 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ChatService {
+    storage: TemporaryStorage;
     constructor(
         @InjectRepository(Location) private readonly locationRepository: Repository<Location>,
         @InjectRepository(ServiceType) private readonly serviceTypeRepository: Repository<ServiceType>,
-        @InjectRepository(Service) private readonly serviceRepository: Repository<Service>
-    ) { }
+        @InjectRepository(Service) private readonly serviceRepository: Repository<Service>,
+    ) {
+        this.storage = new TemporaryStorage();
+    }
 
     async processUserMessage(userMessage: string): Promise<any> {
         try {
+            if (this.storage.get('isBlock') === 'true')
+                return "Tạm thời chặn tính năng này để khỏi bị hack";
             const model = new AzureChatOpenAI({
                 temperature: 0.01,
                 model: "gpt-4o",
@@ -35,7 +41,7 @@ export class ChatService {
             });
             const locationDataString = locationData.map(location => `- Địa điểm: ${location.name}, địa chỉ: ${location.address}`).join('\n');
             const serviceString = serviceData.map(service => `- Dịch vụ: ${service.name}, loại dịch vụ: ${service.serviceType.name}, địa chỉ: ${service.address}, số điện thoại: ${service.phone}, email: ${service.email}, website: ${service.website}, mức giá: ${service.priceRange}`).join('\n');
-            
+
             // Split system prompt and user prompt
             let systemPrompt = `Bạn là trợ lý AI giúp người dùng lập kế hoạch cho chuyến đi của họ. Bạn có thể cung cấp thông tin về địa điểm, dịch vụ và loại dịch vụ. Bạn cũng có thể giúp người dùng tìm dịch vụ tốt nhất cho nhu cầu của họ. Không được tạo ra bất kỳ dữ liệu nào.`;
             let userPrompt = `Hãy giúp tôi trả lời câu hỏi sau: {input}\nsử dụng các dữ liệu sau:\n\n{context}`;
@@ -50,7 +56,7 @@ export class ChatService {
                 ["system", systemPrompt],
                 ["human", userPrompt],
             ])
-            
+
             const combineDocsChain = await createStuffDocumentsChain({
                 llm: model,
                 prompt: tempPrompt,

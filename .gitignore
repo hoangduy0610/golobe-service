@@ -401,3 +401,4 @@ dist
 
 uploads/**
 !uploads/.gitkeep
+data.json
