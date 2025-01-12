@@ -18,10 +18,21 @@ export class ReviewService {
     ) { }
 
     async findAll(): Promise<Review[]> {
-        return this.reviewRepository.find({ 
+        return this.reviewRepository.find({
             withDeleted: false,
             relations: ['user', 'service'],
-         });
+        });
+    }
+
+    async findTop3(): Promise<Review[]> {
+        return this.reviewRepository.find({
+            withDeleted: false,
+            take: 3,
+            order: {
+                createdAt: 'DESC',
+            },
+            relations: ['user', 'service'],
+        });
     }
 
     async findById(id: number): Promise<Review> {
