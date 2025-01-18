@@ -22,6 +22,9 @@ export class User {
     @Column()
     name: string;
 
+    @Column({ nullable: true })
+    avatar: string;
+
     @Column({ unique: true })
     email: string;
 

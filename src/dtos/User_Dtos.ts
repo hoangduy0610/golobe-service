@@ -14,4 +14,9 @@ export class User_UpdateDto extends OmitType(User_CreateDto, ['password', 'role'
     @IsEnum(EnumRoles)
     @IsOptional()
     role: EnumRoles;
+
+    @ApiProperty()
+    @IsString()
+    @IsOptional()
+    avatar?: string;
 }
