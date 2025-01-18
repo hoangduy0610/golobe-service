@@ -5,6 +5,7 @@ import { EnumPriceRange } from '@/enums/EnumPriceRange';
 import { EnumOpeningDay, EnumOpeningHours } from '@/enums/EnumOpening';
 import { Review } from './Review.entity';
 import { Blog } from './Blog.entity';
+import { Location } from './Location.entity';
 
 export class OpeningHours {
     day: EnumOpeningDay;
@@ -56,11 +57,17 @@ export class Service {
     @Column()
     serviceTypeId: number;
 
+    @Column()
+    locationId: number;
+
     @Column('jsonb')
     openingHours: OpeningHours[];
 
     @ManyToOne(() => ServiceType, serviceType => serviceType.services)
     serviceType: ServiceType;
+
+    @ManyToOne(() => Location, location => location.services)
+    location: Location;
 
     @OneToMany(() => Review, review => review.service)
     reviews: Review[];

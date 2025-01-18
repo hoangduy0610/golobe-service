@@ -1,5 +1,6 @@
 
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Service } from './Service.entity';
 
 @Entity()
 export class Location {
@@ -20,6 +21,9 @@ export class Location {
 
     @Column({ nullable: true })
     mapMarker?: string;
+    
+    @OneToMany(() => Service, service => service.serviceType)
+    services: Service[];
 
     @CreateDateColumn({ default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

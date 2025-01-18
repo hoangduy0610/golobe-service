@@ -80,6 +80,11 @@ export class Service_CreateDto {
     @IsNotEmpty()
     serviceTypeId: number;
 
+    @ApiProperty()
+    @IsNumber()
+    @IsNotEmpty()
+    locationId: number;
+
     @ApiProperty({ type: 'array', items: { type: 'object' } })
     openingHours: OpeningHours[];
 }

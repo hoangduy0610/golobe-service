@@ -1,6 +1,7 @@
 import { MessageCode } from '@/commons/MessageCode';
 import { ApplicationException } from '@/controllers/ExceptionController';
 import { Service_CreateDto, Service_UpdateDto } from '@/dtos/Service_Dtos';
+import { Location } from '@/entities/Location.entity';
 import { Service } from '@/entities/Service.entity';
 import { ServiceType } from '@/entities/ServiceType.entity';
 import { EnumOpeningHours } from '@/enums/EnumOpening';
@@ -15,12 +16,14 @@ export class ServiceService {
         private readonly serviceRepository: Repository<Service>,
         @InjectRepository(ServiceType)
         private readonly serviceTypeRepository: Repository<ServiceType>,
+        @InjectRepository(Location)
+        private readonly locationRepository: Repository<Location>,
     ) { }
 
     async findAll(): Promise<Service[]> {
         return this.serviceRepository.find({
             withDeleted: false,
-            relations: ['serviceType', 'reviews'],
+            relations: ['serviceType', 'reviews', 'reviews.user', 'location'],
         });
     }
 
@@ -28,7 +31,7 @@ export class ServiceService {
         return this.serviceRepository.findOne({
             where: { id },
             withDeleted: false,
-            relations: ['serviceType', 'reviews', 'reviews.user'],
+            relations: ['serviceType', 'reviews', 'reviews.user', 'location'],
         });
     }
 
@@ -41,6 +44,15 @@ export class ServiceService {
 
         if (!serviceType) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.SERVICE_TYPE_NOT_FOUND);
+        }
+
+        const location = await this.locationRepository.findOne({
+            where: { id: dto.locationId },
+            withDeleted: false,
+        });
+
+        if (!location) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.LOCATION_NOT_FOUND);
         }
 
         // Check Opening Hours
@@ -62,7 +74,11 @@ export class ServiceService {
         }
 
         try {
-            return await this.serviceRepository.save(dto);
+            return await this.serviceRepository.save({
+                ...dto,
+                location,
+                serviceType,
+            });
         } catch (error) {
             throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.SERVICE_CREATE_FAILED);
         }
@@ -87,6 +103,21 @@ export class ServiceService {
             if (!serviceType) {
                 throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.SERVICE_TYPE_NOT_FOUND);
             }
+
+            service.serviceType = serviceType;
+        }
+
+        if (dto.locationId) {
+            const location = await this.locationRepository.findOne({
+                where: { id: dto.locationId },
+                withDeleted: false,
+            });
+
+            if (!location) {
+                throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.LOCATION_NOT_FOUND);
+            }
+
+            service.location = location;
         }
 
         if (dto.openingHours) {

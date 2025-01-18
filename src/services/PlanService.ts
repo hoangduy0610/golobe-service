@@ -205,6 +205,7 @@ export class PlanService {
                     const scheduleItem = new PlanSchedule();
                     scheduleItem.day = dc;
                     scheduleItem.plan = plan;
+                    scheduleItem.location = plan.location;
                     schedule.push(scheduleItem);
                 }
                 await this.planScheduleRepository.save(schedule);
