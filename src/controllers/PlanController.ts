@@ -1,4 +1,4 @@
-import { PlanSchedule_AddItemDto, PlanSchedule_RemoveItemDto, PlanSchedule_SetLocationDto } from '@/dtos/PlanSchedule_Dtos';
+import { PlanSchedule_AddItemDto, PlanSchedule_RemoveItemDto, PlanSchedule_SetLocationDto, PlanScheduleItemOrderDto } from '@/dtos/PlanSchedule_Dtos';
 import { Plan_CreateDto, Plan_RemoveSavedItemDto, Plan_SaveItemDto, Plan_UpdateDto } from '@/dtos/Plan_Dtos';
 import { RoleGuard } from '@/guards/RoleGuard';
 import { PlanService } from '@/services/PlanService';
@@ -60,11 +60,35 @@ export class PlanController {
         return res.status(HttpStatus.OK).json(await this.planService.removePlanScheduleItem(dto));
     }
 
+    @Put('/schedule/order')
+    @UseGuards(AuthGuard('jwt'), RoleGuard)
+    @ApiBearerAuth()
+    async updateScheduleItemOrder(@Req() req, @Res() res, @Body() dto: PlanScheduleItemOrderDto) {
+        return res.status(HttpStatus.OK).json(await this.planService.updatePlanScheduleOrder(dto));
+    }
+
     @Post('/')
     @UseGuards(AuthGuard('jwt'), RoleGuard)
     @ApiBearerAuth()
     async create(@Req() req, @Res() res, @Body() dto: Plan_CreateDto) {
         return res.status(HttpStatus.OK).json(await this.planService.create(req.user.id, dto));
+    }
+
+    @Post('/pdf/:id')
+    @ApiBearerAuth()
+    async generatePdf(@Req() req, @Res() res, @Param('id') id: number, @Headers('Authorization') authorization?: string) {
+        const buffer = await this.planService.exportPlan(id, authorization);
+        res.set({
+            // pdf
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename=pdf.pdf`,
+            'Content-Length': buffer.length,
+            // prevent cache
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            Pragma: 'no-cache',
+            Expires: 0,
+        });
+        res.end(buffer);
     }
 
     @Get('/:id')

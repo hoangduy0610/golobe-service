@@ -1,7 +1,7 @@
 import { Constant } from '@/commons/Constant';
 import { MessageCode } from '@/commons/MessageCode';
 import { ApplicationException } from '@/controllers/ExceptionController';
-import { PlanSchedule_AddItemDto, PlanSchedule_RemoveItemDto, PlanSchedule_SetLocationDto } from '@/dtos/PlanSchedule_Dtos';
+import { PlanSchedule_AddItemDto, PlanSchedule_RemoveItemDto, PlanSchedule_SetLocationDto, PlanScheduleItemOrderDto } from '@/dtos/PlanSchedule_Dtos';
 import { Plan_CreateDto, Plan_RemoveSavedItemDto, Plan_SaveItemDto, Plan_UpdateDto } from '@/dtos/Plan_Dtos';
 import { Location } from '@/entities/Location.entity';
 import { Plan } from '@/entities/Plan.entity';
@@ -15,6 +15,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, MoreThan, In } from 'typeorm';
 import * as jwt from 'jsonwebtoken';
 import { EnumRoles } from '@/enums/EnumRoles';
+import { createPdf } from '@leninlb/nestjs-html-to-pdf';
+import * as path from 'path';
+import * as moment from 'moment';
 
 @Injectable()
 export class PlanService {
@@ -72,6 +75,11 @@ export class PlanService {
                 throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
             }
         }
+
+        plan.schedule = plan.schedule.map(schedule => {
+            schedule.items = schedule.items.sort((a, b) => a.order - b.order);
+            return schedule;
+        });
 
         return plan;
     }
@@ -417,5 +425,104 @@ export class PlanService {
         await this.planScheduleItemRepository.remove(planScheduleItem);
 
         return plan;
+    }
+
+    async updatePlanScheduleOrder(dto: PlanScheduleItemOrderDto): Promise<Plan> {
+        const plan = await this.planRepository.findOne({
+            where: { id: dto.planId },
+            withDeleted: false,
+        });
+
+        if (!plan) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.PLAN_NOT_FOUND);
+        }
+
+        const schedule = await this.planScheduleRepository.findOne({
+            relations: ['plan', 'items'],
+            where: {
+                plan: {
+                    id: dto.planId,
+                },
+                day: dto.day,
+            },
+            withDeleted: false,
+        });
+
+        if (!schedule) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.PLAN_SCHEDULE_NOT_FOUND);
+        }
+
+        schedule.items.forEach(item => {
+            item.order = dto.items.indexOf(item.id) + 1;
+        });
+
+        await this.planScheduleRepository.save(schedule);
+
+        return plan;
+    }
+
+    async exportPlan(id: number, authorization?: string): Promise<any> {
+        const plan = await this.planRepository.findOne({
+            where: { id },
+            relations: ['owner', 'location', 'savedServices', 'schedule', 'schedule.location', 'schedule.items', 'schedule.items.service'],
+            withDeleted: false,
+        });
+
+        if (!plan) {
+            throw new ApplicationException(HttpStatus.BAD_REQUEST, MessageCode.PLAN_NOT_FOUND);
+        }
+
+        if (plan.visibility === EnumVisibility.PRIVATE) {
+            if (!authorization) {
+                throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
+            }
+
+            try {
+                const jwtRaw = authorization.split(' ')[1];
+                const decoded = jwt.verify(jwtRaw, Constant.JWT_SECRET);
+                const userId = decoded['id'];
+                const role = decoded['role'];
+
+                if (plan.owner.id !== userId && role !== EnumRoles.ROLE_ADMIN) {
+                    throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
+                }
+            } catch (error) {
+                if (error instanceof ApplicationException) {
+                    throw error;
+                }
+                throw new ApplicationException(HttpStatus.FORBIDDEN, MessageCode.PLAN_NOT_FOUND);
+            }
+        }
+
+        const data = {
+            tripName: plan.name,
+            startDate: moment(plan.startDate).format('DD/MM/YYYY'),
+            endDate: moment(plan.endDate).format('DD/MM/YYYY'),
+            schedule: plan.schedule.map(schedule => ({
+                day: schedule.day,
+                location: schedule.location.name,
+                date: moment(plan.startDate).add(schedule.day - 1, 'days').format('DD/MM/YYYY'),
+                items: schedule.items.map(item => ({
+                    serviceName: item.service.name,
+                    serviceAddress: item.service.address,
+                })),
+            })),
+        }
+        const options = {
+            format: 'A4',
+            displayHeaderFooter: false,
+            margin: {
+                left: '10mm',
+                top: '25mm',
+                right: '10mm',
+                bottom: '15mm',
+            },
+            // headerTemplate: `<div style="width: 100%; text-align: center;"><span style="font-size: 20px;">@saemhco CORP</span><br><span class="date" style="font-size:15px"><span></div>`,
+            // footerTemplate:
+            //     '<div style="width: 100%; text-align: center; font-size: 10px;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>',
+            landscape: false,
+        };
+        const filePath = path.join(process.cwd(), 'templates', 'planpdf.hbs');;
+        return createPdf(filePath, options, data);
     }
 }

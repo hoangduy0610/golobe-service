@@ -59,3 +59,19 @@ export class PlanSchedule_RemoveItemDto extends PickType(PlanSchedule_AddItemDto
     @IsNotEmpty()
     day: number;
 }
+
+export class PlanScheduleItemOrderDto {
+    @ApiProperty({ required: true, type: Number })
+    @IsNumber()
+    @IsNotEmpty()
+    planId: number;
+
+    @ApiProperty({ required: true, type: Number })
+    @IsNumber()
+    @IsNotEmpty()
+    day: number;
+
+    @ApiProperty({ required: true, type: Number, isArray: true })
+    @IsNotEmpty()
+    items: number[];
+}

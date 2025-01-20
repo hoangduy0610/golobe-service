@@ -17,6 +17,9 @@ export class PlanScheduleItem {
     @Column({ nullable: true })
     startTime?: string;
 
+    @Column({ default: 1 })
+    order: number;
+
     @Column({ nullable: true })
     endTime?: string;
 
